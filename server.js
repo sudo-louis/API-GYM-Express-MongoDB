@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
+const connectDB = require("./config/db");
 
-const db = require("./config/db");
+connectDB();
 
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
@@ -25,4 +27,4 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

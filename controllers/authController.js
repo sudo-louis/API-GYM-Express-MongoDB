@@ -3,22 +3,22 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 require("dotenv").config();
 
-exports.login = (req, res) => {
-    const { email, password } = req.body;
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-    User.findByEmail(email, (err, results) => {
-        if (err || results.length === 0) return res.status(400).json({ error: "Usuario no encontrado" });
+        if (!user) return res.status(400).json({ error: "Usuario no encontrado" });
 
-        const user = results[0];
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ error: "Contraseña incorrecta" });
 
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (!isMatch) return res.status(400).json({ error: "Contraseña incorrecta" });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-            const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-            res.json({ message: "Login exitoso", token });
-        });
-    });
+        res.json({ message: "Login exitoso", token });
+    } catch (err) {
+        res.status(500).json({ error: "Error en el servidor" });
+    }
 };
 
 exports.logout = (req, res) => {
