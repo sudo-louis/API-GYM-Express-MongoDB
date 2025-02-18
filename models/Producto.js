@@ -1,71 +1,14 @@
-const db = require("../config/db");
+const mongoose = require("mongoose");
 
-const Producto = {
-    getAll: () => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                `SELECT p.*, c.nombre_categoria, pr.nombre_empresa 
-                 FROM productos p 
-                 JOIN categorias c ON p.categoria = c.id 
-                 JOIN proveedores pr ON p.proveedor = pr.id`, 
-                (err, results) => {
-                    if (err) reject(err);
-                    else resolve(results);
-                }
-            );
-        });
-    },
+const ProductoSchema = new mongoose.Schema({
+    nombre_producto: { type: String, required: true },
+    descripcion: { type: String },
+    proveedor: { type: mongoose.Schema.Types.ObjectId, ref: "Proveedor", required: true },
+    categoria: { type: mongoose.Schema.Types.ObjectId, ref: "Categoria", required: true },
+    cantidad_en_stock: { type: Number, required: true },
+    precio: { type: Number, required: true }
+}, { timestamps: true });
 
-    getById: (id) => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                `SELECT p.*, c.nombre_categoria, pr.nombre_empresa 
-                 FROM productos p 
-                 JOIN categorias c ON p.categoria = c.id 
-                 JOIN proveedores pr ON p.proveedor = pr.id 
-                 WHERE p.id = ?`, 
-                [id], (err, results) => {
-                    if (err) reject(err);
-                    else resolve(results);
-                }
-            );
-        });
-    },
-
-    create: ({ nombre_producto, descripcion, proveedor, categoria, cantidad_en_stock, precio }) => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                "INSERT INTO productos (nombre_producto, descripcion, proveedor, categoria, cantidad_en_stock, precio) VALUES (?, ?, ?, ?, ?, ?)",
-                [nombre_producto, descripcion, proveedor, categoria, cantidad_en_stock, precio],
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                }
-            );
-        });
-    },
-
-    update: (id, { nombre_producto, descripcion, proveedor, categoria, cantidad_en_stock, precio }) => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                "UPDATE productos SET nombre_producto = ?, descripcion = ?, proveedor = ?, categoria = ?, cantidad_en_stock = ?, precio = ? WHERE id = ?",
-                [nombre_producto, descripcion, proveedor, categoria, cantidad_en_stock, precio, id],
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                }
-            );
-        });
-    },
-
-    delete: (id) => {
-        return new Promise((resolve, reject) => {
-            db.query("DELETE FROM productos WHERE id = ?", [id], (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            });
-        });
-    }
-};
+const Producto = mongoose.model("Producto", ProductoSchema);
 
 module.exports = Producto;

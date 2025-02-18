@@ -1,58 +1,13 @@
-const db = require("../config/db");
+const mongoose = require("mongoose");
 
-const Proveedor = {
-    getAll: () => {
-        return new Promise((resolve, reject) => {
-            db.query("SELECT * FROM proveedores", (err, results) => {
-                if (err) reject(err);
-                else resolve(results);
-            });
-        });
-    },
+const ProveedorSchema = new mongoose.Schema({
+    nombre_empresa: { type: String, required: true },
+    nombre_contacto: { type: String },
+    telefono: { type: String },
+    correo: { type: String },
+    productos_suministrados: { type: String }
+}, { timestamps: true });
 
-    getById: (id) => {
-        return new Promise((resolve, reject) => {
-            db.query("SELECT * FROM proveedores WHERE id = ?", [id], (err, results) => {
-                if (err) reject(err);
-                else resolve(results);
-            });
-        });
-    },
-
-    create: ({ nombre_empresa, nombre_contacto, telefono, correo, productos_suministrados }) => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                "INSERT INTO proveedores (nombre_empresa, nombre_contacto, telefono, correo, productos_suministrados) VALUES (?, ?, ?, ?, ?)",
-                [nombre_empresa, nombre_contacto, telefono, correo, productos_suministrados],
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                }
-            );
-        });
-    },
-
-    update: (id, { nombre_empresa, nombre_contacto, telefono, correo, productos_suministrados }) => {
-        return new Promise((resolve, reject) => {
-            db.query(
-                "UPDATE proveedores SET nombre_empresa = ?, nombre_contacto = ?, telefono = ?, correo = ?, productos_suministrados = ? WHERE id = ?",
-                [nombre_empresa, nombre_contacto, telefono, correo, productos_suministrados, id],
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                }
-            );
-        });
-    },
-
-    delete: (id) => {
-        return new Promise((resolve, reject) => {
-            db.query("DELETE FROM proveedores WHERE id = ?", [id], (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            });
-        });
-    }
-};
+const Proveedor = mongoose.model("Proveedor", ProveedorSchema);
 
 module.exports = Proveedor;
