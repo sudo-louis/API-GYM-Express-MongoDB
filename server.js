@@ -5,6 +5,10 @@ const connectDB = require("./config/db");
 
 connectDB();
 
+require("./models/Categoria");
+require("./models/Proveedor");
+require("./models/Producto");
+
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
